@@ -10,8 +10,12 @@ import os
 import glob
 from tkinter import simpledialog
 from tkinter.simpledialog import Dialog
-#Creating Class
+from tkinter import messagebox
 
+
+
+
+#Creating Class
 class pdf():
 	global file_names , file_dir
 	file_dir=[]
@@ -60,34 +64,27 @@ class pdf():
 		view.destroy()
 		
 		
-	#def askname(self):
-#		global filename
-#		Tk().withdraw()
-#		simpledialog.Dialog.buttonbox()
-#		simpledialog.Dialog.ok(event=pdf_convert)
-#		filename=simpledialog.askstring("Name", "Enter File Name:")
-#		
-	
-	
-	
-	def pdf_convert(self):
+	def askname(self):
+		global filename
+		filename=filedialog.asksaveasfilename()
+		self.pdf_convert(filename)
 		
-#		if(len(filename)>0):
-#			pass
-#		else:
-#			filename="file"
-				
-		f= tempfile.TemporaryDirectory(dir = "C:/")
+	
+	
+	
+	def pdf_convert(self,filename):
+		f= tempfile.TemporaryDirectory(dir = "/storage/emulated/0/")
 		dir=f.name
 		
 		for i in file_dir:
 			img=UMP.open(i)
-			img.thumbnail((500,500))
+			img.thumbnail((600,600))
 			head, tail=os.path.split(i)
 			f_dir=dir+"/"+tail+".jpg"
 			img.save(f_dir)
 		
-		new_pdf=canvas.Canvas("MyPdf.pdf",pagesize="letter")
+		p,q=os.path.split(filename)
+		new_pdf=canvas.Canvas(q+".pdf",pagesize="letter")
 		new_pdf.setAuthor("Sameer")
 		
 		for j in glob.glob(dir+"/*.jpg"):
@@ -98,12 +95,16 @@ class pdf():
 			new_pdf.drawImage(j,x,y)
 			new_pdf.showPage()
 		
+		os.chdir(p)
 		new_pdf.save()
+		messagebox.showinfo("Result","Pdf Created")
+		
 
 
-
-
+#Object Of Class PDF
 obj=pdf()
+
+
 #Create tkinter Window
 global root
 root=Tk()
@@ -122,11 +123,8 @@ file_listbox.pack( side = RIGHT, fill =Y)
 load_btn=Button(root,text="Load Files", width=11,command=obj.get_files)
 load_btn.pack( anchor=W , padx=(60,0) , pady=(240,10))
 
-
-create_btn=Button(root,text="Create",width=11 , command=obj.pdf_convert)
+create_btn=Button(root,text="Create",width=11 , command=obj.askname)
 create_btn.pack(anchor = W , padx=(60,0) , pady=(300,100))
-
-
 
 
 root.mainloop()
